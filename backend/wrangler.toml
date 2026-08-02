@@ -1,0 +1,13 @@
+name = "cahtani-backend"
+main = "server.ts"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ENVIRONMENT = "production"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cahtani-db"
+database_id = "38269d3c-dede-4863-9752-46a575215c74"
+migrations_dir = "migrations"

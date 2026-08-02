@@ -1,0 +1,6 @@
+{
+  "name": "CahTani AI - Asisten AI Petani",
+  "description": "AI Chatbot Khusus Petani untuk Diagnosa Penyakit Tanaman, Identifikasi Hama, & Rekomendasi Pengobatan Praktis",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
