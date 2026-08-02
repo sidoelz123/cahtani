@@ -29,6 +29,7 @@ import { FixedBottomNav } from "../components/FixedBottomNav";
 import { ShopProduct } from "../data/shopProducts";
 import { User } from "../types";
 import { AdminGuard, isAdminUser } from "../components/AdminGuard";
+import { apiClient } from "../lib/api";
 
 interface ShopPageProps {
   currentUser: User | null;
@@ -66,7 +67,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
 
   // Fetch categories from API
   React.useEffect(() => {
-    fetch("/api/categories")
+    apiClient.get("/api/categories")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) {
@@ -79,7 +80,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
   // Fetch products from API
   const refreshProducts = React.useCallback(() => {
     setLoadingProducts(true);
-    fetch("/api/shop/products")
+    apiClient.get("/api/shop/products")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) {
@@ -98,7 +99,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
     if (!isAdminUser(currentUser)) return;
     if (window.confirm("Apakah Anda yakin ingin mengembalikan katalog ke daftar produk bawaan awal?")) {
       try {
-        const res = await fetch("/api/shop/reset-defaults", { method: "POST" });
+        const res = await apiClient.post("/api/shop/reset-defaults");
         const data = await res.json();
         if (data.success) {
           refreshProducts();
@@ -154,25 +155,21 @@ export const ShopPage: React.FC<ShopPageProps> = ({
     try {
       if (editingProduct) {
         // PUT /api/shop/products/:id
-        const res = await fetch(`/api/shop/products/${editingProduct.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: productFormData.name,
-            category: productFormData.category,
-            cropTarget: productFormData.cropTarget,
-            priceRange: productFormData.priceRange,
-            description: productFormData.description,
-            aiRecommendation: productFormData.aiRecommendation,
-            image: productFormData.image,
-            badge: productFormData.badge,
-            shopeeSearchKeyword: productFormData.shopeeSearchKeyword,
-            tokopediaSearchKeyword: productFormData.tokopediaSearchKeyword,
-            tiktokSearchKeyword: productFormData.tiktokSearchKeyword,
-            shopeeAffiliateUrl: productFormData.shopeeAffiliateUrl,
-            tokopediaAffiliateUrl: productFormData.tokopediaAffiliateUrl,
-            tiktokAffiliateUrl: productFormData.tiktokAffiliateUrl,
-          }),
+        const res = await apiClient.put(`/api/shop/products/${editingProduct.id}`, {
+          name: productFormData.name,
+          category: productFormData.category,
+          cropTarget: productFormData.cropTarget,
+          priceRange: productFormData.priceRange,
+          description: productFormData.description,
+          aiRecommendation: productFormData.aiRecommendation,
+          image: productFormData.image,
+          badge: productFormData.badge,
+          shopeeSearchKeyword: productFormData.shopeeSearchKeyword,
+          tokopediaSearchKeyword: productFormData.tokopediaSearchKeyword,
+          tiktokSearchKeyword: productFormData.tiktokSearchKeyword,
+          shopeeAffiliateUrl: productFormData.shopeeAffiliateUrl,
+          tokopediaAffiliateUrl: productFormData.tokopediaAffiliateUrl,
+          tiktokAffiliateUrl: productFormData.tiktokAffiliateUrl,
         });
         const data = await res.json();
         if (data.success) {
@@ -182,26 +179,22 @@ export const ShopPage: React.FC<ShopPageProps> = ({
         }
       } else {
         // POST /api/shop/products
-        const res = await fetch("/api/shop/products", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: productFormData.name,
-            category: productFormData.category,
-            cropTarget: productFormData.cropTarget,
-            priceRange: productFormData.priceRange,
-            description: productFormData.description,
-            aiRecommendation: productFormData.aiRecommendation,
-            image: productFormData.image,
-            badge: productFormData.badge,
-            shopeeSearchKeyword: productFormData.shopeeSearchKeyword,
-            tokopediaSearchKeyword: productFormData.tokopediaSearchKeyword,
-            tiktokSearchKeyword: productFormData.tiktokSearchKeyword,
-            shopeeAffiliateUrl: productFormData.shopeeAffiliateUrl,
-            tokopediaAffiliateUrl: productFormData.tokopediaAffiliateUrl,
-            tiktokAffiliateUrl: productFormData.tiktokAffiliateUrl,
-            createdBy: currentUser?.id,
-          }),
+        const res = await apiClient.post("/api/shop/products", {
+          name: productFormData.name,
+          category: productFormData.category,
+          cropTarget: productFormData.cropTarget,
+          priceRange: productFormData.priceRange,
+          description: productFormData.description,
+          aiRecommendation: productFormData.aiRecommendation,
+          image: productFormData.image,
+          badge: productFormData.badge,
+          shopeeSearchKeyword: productFormData.shopeeSearchKeyword,
+          tokopediaSearchKeyword: productFormData.tokopediaSearchKeyword,
+          tiktokSearchKeyword: productFormData.tiktokSearchKeyword,
+          shopeeAffiliateUrl: productFormData.shopeeAffiliateUrl,
+          tokopediaAffiliateUrl: productFormData.tokopediaAffiliateUrl,
+          tiktokAffiliateUrl: productFormData.tiktokAffiliateUrl,
+          createdBy: currentUser?.id,
         });
         const data = await res.json();
         if (data.success) {
@@ -223,9 +216,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
     if (!isAdminUser(currentUser)) return;
     if (!deletingProduct) return;
     try {
-      const res = await fetch(`/api/shop/products/${deletingProduct.id}`, {
-        method: "DELETE",
-      });
+      const res = await apiClient.delete(`/api/shop/products/${deletingProduct.id}`);
       const data = await res.json();
       if (data.success) {
         refreshProducts();

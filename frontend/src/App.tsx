@@ -6,6 +6,7 @@ import { queryClient } from "./lib/queryClient";
 import { router } from "./router";
 import { ChatDrawer } from "./components/ChatDrawer";
 import { AuthModal } from "./components/AuthModal";
+import { apiClient } from "./lib/api";
 import { User } from "./types";
 import { clearChatSessionData } from "./lib/session";
 
@@ -62,10 +63,7 @@ function AppContent() {
 
   const handleLogout = async () => {
     try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
+      await apiClient.post("/api/auth/logout");
     } catch (err) {
       console.error("Logout API call failed:", err);
     } finally {

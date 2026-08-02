@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { Bug, ArrowRight, ShieldAlert } from "lucide-react";
 import { PestDiseaseItem } from "../types";
+import { apiClient } from "../lib/api";
 
 interface PestGalleryProps {
   onSelectPest: (pestName: string, crop: string, symptoms: string) => void;
@@ -12,7 +13,7 @@ export const PestGallery: React.FC<PestGalleryProps> = ({ onSelectPest }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/pests")
+    apiClient.get("/api/pests")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) {

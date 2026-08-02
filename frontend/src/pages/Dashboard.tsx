@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { checkUpcomingTasksAndNotify } from "../lib/notifications";
+import { apiClient } from "../lib/api";
 import {
   Sprout,
   CloudSun,
@@ -84,7 +85,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         const uParam = currentUser?.id ? `?userId=${currentUser.id}` : "";
 
         // 1. Fetch Logs
-        const logsRes = await fetch(`/api/logs${uParam}`);
+        const logsRes = await apiClient.get(`/api/logs${uParam}`);
         if (logsRes.ok) {
           const logsData = await logsRes.json();
           if (logsData.success && Array.isArray(logsData.data)) {
@@ -93,7 +94,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         }
 
         // 2. Fetch Schedule
-        const schRes = await fetch(`/api/schedules${uParam}`);
+        const schRes = await apiClient.get(`/api/schedules${uParam}`);
         if (schRes.ok) {
           const schData = await schRes.json();
           if (schData.success && schData.data) {
@@ -102,7 +103,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         }
 
         // 3. Fetch Reminders
-        const remRes = await fetch(`/api/reminders${uParam}`);
+        const remRes = await apiClient.get(`/api/reminders${uParam}`);
         if (remRes.ok) {
           const remData = await remRes.json();
           if (remData.success && Array.isArray(remData.data)) {
@@ -156,11 +157,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     };
 
     try {
-      const res = await fetch("/api/logs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const res = await apiClient.post("/api/logs", payload);
       const data = await res.json();
       if (res.ok && data.success && data.data) {
         setGrowthLogs([data.data, ...growthLogs]);
@@ -182,7 +179,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const handleDeleteLog = async (id: string) => {
     if (confirm("Apakah Anda yakin ingin menghapus catatan jurnal ini?")) {
       try {
-        await fetch(`/api/logs/${id}`, { method: "DELETE" });
+        await apiClient.delete(`/api/logs/${id}`);
       } catch (e) {
         console.error(e);
       }
@@ -211,18 +208,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const weatherAdvisoryMutation = useMutation({
     mutationFn: async (locToFetch: string) => {
       weatherToastIdRef.current = toast.loading("Menganalisis cuaca & menyusun saran AI...");
-      const res = await fetch("/api/weather-advisory", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          location: locToFetch,
-          tempC: weatherData.tempC,
-          airHumidity: weatherData.airHumidity,
-          soilHumidity: weatherData.soilHumidity,
-          rainProbability: weatherData.rainProbability,
-          windSpeedKmH: weatherData.windSpeedKmH,
-          cropType: currentUser?.crops || "Padi / Cabai",
-        }),
+      const res = await apiClient.post("/api/weather-advisory", {
+        location: locToFetch,
+        tempC: weatherData.tempC,
+        airHumidity: weatherData.airHumidity,
+        soilHumidity: weatherData.soilHumidity,
+        rainProbability: weatherData.rainProbability,
+        windSpeedKmH: weatherData.windSpeedKmH,
+        cropType: currentUser?.crops || "Padi / Cabai",
       });
       return await res.json();
     },
@@ -298,14 +291,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const scheduleMutation = useMutation({
     mutationFn: async () => {
       scheduleToastIdRef.current = toast.loading("Membuat kalender tanam otomatis dengan AI...");
-      const res = await fetch("/api/planting-schedule", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cropType: selectedCropForSchedule,
-          startDate: startDateForSchedule,
-          location: currentUser?.location || "Indonesia",
-        }),
+      const res = await apiClient.post("/api/planting-schedule", {
+        cropType: selectedCropForSchedule,
+        startDate: startDateForSchedule,
+        location: currentUser?.location || "Indonesia",
       });
       return await res.json();
     },
@@ -334,16 +323,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       // Save to backend database asynchronously
       try {
-        fetch("/api/schedules", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: currentUser?.id,
-            cropType: newSchedule.cropType,
-            startDate: newSchedule.startDate,
-            harvestTargetDate: newSchedule.harvestTargetDate,
-            milestones: newSchedule.milestones,
-          }),
+        apiClient.post("/api/schedules", {
+          userId: currentUser?.id,
+          cropType: newSchedule.cropType,
+          startDate: newSchedule.startDate,
+          harvestTargetDate: newSchedule.harvestTargetDate,
+          milestones: newSchedule.milestones,
         }).catch(console.error);
       } catch (e) {
         console.error(e);
@@ -413,11 +398,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     setActiveSchedule(updated);
 
     try {
-      await fetch(`/api/schedules/milestones/${milestoneId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: nextVal }),
-      });
+      await apiClient.patch(`/api/schedules/milestones/${milestoneId}`, { completed: nextVal });
     } catch (e) {
       console.error(e);
     }
@@ -441,11 +422,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     };
 
     try {
-      const res = await fetch("/api/reminders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const res = await apiClient.post("/api/reminders", payload);
       const data = await res.json();
       if (res.ok && data.success && data.data) {
         setReminders([data.data, ...reminders]);
@@ -473,11 +450,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     );
 
     try {
-      await fetch(`/api/reminders/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: nextVal }),
-      });
+      await apiClient.patch(`/api/reminders/${id}`, { completed: nextVal });
     } catch (e) {
       console.error(e);
     }
@@ -487,7 +460,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
     if (confirm("Hapus pengingat ini?")) {
       setReminders(reminders.filter((r) => r.id !== id));
       try {
-        await fetch(`/api/reminders/${id}`, { method: "DELETE" });
+        await apiClient.delete(`/api/reminders/${id}`);
       } catch (e) {
         console.error(e);
       }

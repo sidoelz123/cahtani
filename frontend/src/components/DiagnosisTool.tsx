@@ -4,6 +4,7 @@ import { Camera, Upload, Sparkles, AlertTriangle, CheckCircle2, RefreshCw, X, Fi
 import { toast } from "sonner";
 import { CROP_OPTIONS, normalizeCropId } from "../data/mockData";
 import { getFarmerProfile } from "../lib/session";
+import { apiClient } from "../lib/api";
 import { WilayahLocationPicker } from "./WilayahLocationPicker";
 
 interface DiagnosisToolProps {
@@ -26,7 +27,7 @@ export const DiagnosisTool: React.FC<DiagnosisToolProps> = ({ selectedCrop, onSe
   const [presets, setPresets] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("/api/presets")
+    apiClient.get("/api/presets")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) {
@@ -49,11 +50,7 @@ export const DiagnosisTool: React.FC<DiagnosisToolProps> = ({ selectedCrop, onSe
       farmerProfile: any;
     }) => {
       diagnosisToastIdRef.current = toast.loading("Sedang menganalisis penyakit tanaman dengan AI...");
-      const response = await fetch("/api/diagnose", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await apiClient.post("/api/diagnose", payload);
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error || "Gagal melakukan diagnosa.");

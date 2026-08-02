@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import { FaqItem } from "../types";
+import { apiClient } from "../lib/api";
 
 export const FaqSection: React.FC = () => {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   useEffect(() => {
-    fetch("/api/faqs")
+    apiClient.get("/api/faqs")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) {

@@ -11,6 +11,7 @@ import {
   getChatHistory,
   saveChatHistorySession,
 } from "../lib/session";
+import { apiClient } from "../lib/api";
 
 interface ChatDrawerProps {
   isOpen: boolean;
@@ -201,17 +202,13 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose, selecte
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cropType: selectedCrop,
-          farmerProfile,
-          messages: newMessages.map((m) => ({
-            role: m.sender === "user" ? "user" : "model",
-            content: m.text,
-          })),
-        }),
+      const response = await apiClient.post("/api/chat", {
+        cropType: selectedCrop,
+        farmerProfile,
+        messages: newMessages.map((m) => ({
+          role: m.sender === "user" ? "user" : "model",
+          content: m.text,
+        })),
       });
 
       const data = await response.json();

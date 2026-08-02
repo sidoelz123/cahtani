@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { MapPin, Loader2, CheckCircle2, ChevronDown, RefreshCw } from "lucide-react";
+import { apiClient } from "../lib/api";
 
 export interface WilayahItem {
   code: string;
@@ -47,7 +48,7 @@ export const WilayahLocationPicker: React.FC<WilayahLocationPickerProps> = ({
   // Helper fetcher with backend proxy fallback
   const fetchWilayahApi = async (path: string): Promise<WilayahItem[]> => {
     try {
-      const proxyRes = await fetch(`/api/wilayah/${path}`);
+      const proxyRes = await apiClient.get(`/api/wilayah/${path}`);
       if (proxyRes.ok) {
         const json = await proxyRes.json();
         if (Array.isArray(json.data)) return json.data;
@@ -57,7 +58,7 @@ export const WilayahLocationPicker: React.FC<WilayahLocationPickerProps> = ({
     }
 
     // Fallback to direct URL
-    const directRes = await fetch(`https://wilayah.id/api/${path}`);
+    const directRes = await apiClient.get(`https://wilayah.id/api/${path}`);
     if (!directRes.ok) throw new Error(`Gagal mengambil data dari wilayah.id (${directRes.status})`);
     const json = await directRes.json();
     if (Array.isArray(json.data)) return json.data;

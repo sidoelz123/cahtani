@@ -3,6 +3,7 @@ import { X, LogIn, UserPlus, ShieldCheck, CheckCircle2, AlertCircle, KeyRound, A
 import { toast } from "sonner";
 import { User, FarmerProfile } from "../types";
 import { saveFarmerProfileSession } from "../lib/session";
+import { apiClient } from "../lib/api";
 import { WilayahLocationPicker } from "./WilayahLocationPicker";
 
 interface AuthModalProps {
@@ -65,10 +66,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier: emailOrPhone.trim(), password }),
+      const res = await apiClient.post("/api/auth/login", {
+        identifier: emailOrPhone.trim(),
+        password,
       });
       const data = await res.json();
 
@@ -143,18 +143,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: fullName.trim(),
-          email,
-          phone,
-          password,
-          gender,
-          location: location.trim(),
-          crops: crops.trim(),
-        }),
+      const res = await apiClient.post("/api/auth/register", {
+        name: fullName.trim(),
+        email,
+        phone,
+        password,
+        gender,
+        location: location.trim(),
+        crops: crops.trim(),
       });
 
       const data = await res.json();
@@ -200,13 +196,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          identifier: verifyingUserIdentifier,
-          token: verifyCode.trim(),
-        }),
+      const res = await apiClient.post("/api/auth/verify", {
+        identifier: verifyingUserIdentifier,
+        token: verifyCode.trim(),
       });
 
       const data = await res.json();
@@ -251,10 +243,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier: query }),
+      const res = await apiClient.post("/api/auth/forgot-password", {
+        identifier: query,
       });
 
       const data = await res.json();
@@ -302,14 +292,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          identifier: forgotInput.trim(),
-          resetToken: resetCode.trim(),
-          newPassword,
-        }),
+      const res = await apiClient.post("/api/auth/reset-password", {
+        identifier: forgotInput.trim(),
+        resetToken: resetCode.trim(),
+        newPassword,
       });
 
       const data = await res.json();

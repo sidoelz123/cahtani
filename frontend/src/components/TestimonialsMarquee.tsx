@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
 import { Quote } from "lucide-react";
 import { TestimonialItem } from "../types";
+import { apiClient } from "../lib/api";
 
 export const TestimonialsMarquee: React.FC = () => {
   const [testimonials, setTestimonials] = useState<TestimonialItem[]>([]);
 
   useEffect(() => {
-    fetch("/api/testimonials")
+    apiClient.get("/api/testimonials")
       .then((res) => res.json())
       .then((data) => {
         if (data.success && Array.isArray(data.data)) {
