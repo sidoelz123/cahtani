@@ -35,7 +35,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
           className="font-display font-black text-[clamp(2.8rem,8.5vw,9.5rem)] uppercase leading-[0.85] tracking-tighter text-[#14201A] mb-8"
         >
-          DOKTER <span className="text-[#15803D] underline decoration-8 decoration-[#3A4A3E]">TANAMAN</span> <br />
+          DOKTER <span className="text-[#15803D]">TANAMAN</span> <br />
           DI SAKU PETANI
         </motion.h1>
 
@@ -46,7 +46,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
           className="font-body text-xl md:text-2xl lg:text-3xl text-[#3F4C42] max-w-4xl font-medium leading-relaxed mb-10"
         >
-          Cukup <strong className="text-[#14201A]">foto daun atau tanaman</strong> yang sakit dari HP Anda. CahTani AI langsung mendiagnosis penyakit, mengidentifikasi hama (wereng, patek, ulat), dan memberikan <strong className="text-[#15803D]">resep pengobatan & pemupukan presisi</strong> detik ini juga.
+          Cukup <strong className="text-[#14201A]">foto daun atau tanaman</strong> yang sakit dari
+          HP Anda. CahTani AI langsung mendiagnosis penyakit, mengidentifikasi hama (wereng, patek,
+          ulat), dan memberikan{" "}
+          <strong className="text-[#15803D]">resep pengobatan & pemupukan presisi</strong> detik ini
+          juga.
         </motion.p>
 
         {/* Crop Selection Bar */}
